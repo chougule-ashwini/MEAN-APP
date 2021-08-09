@@ -1,0 +1,6 @@
+<app-header></app-header>
+<main>
+  <!-- $event will pass whatever data is emmited from the component -->
+  <app-post-create (postCreated)="onPostAdded($event)"></app-post-create>
+  <app-post-list [posts]="storedPosts"></app-post-list>
+</main>
