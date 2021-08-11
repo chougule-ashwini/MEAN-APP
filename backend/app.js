@@ -1,6 +1,17 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
+const Post = require('./models/post');
+
 const app = express();
+const uri = 'mongodb+srv://admin:pass@projectcluster.7shkv.mongodb.net/node-angular?retryWrites=true&w=majority';
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log('Connected to database');
+    })
+    .catch((e) => {
+        console.log('Connection failed', e);
+    });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -14,22 +25,21 @@ app.use((req, res, next) => {
     next();
 });
 app.post('/api/post', (req, res, next) => {
-    const post = req.body;
+    const post = new Post({
+        title: req.body.title,
+        content: req.body.content
+    });
     console.log(post);
+    post.save();
     res.status(201).json({ message: 'Post added successfully' });
 });
 app.get('/api/posts', (req, res, next) => {
-    const posts = [{
-        id: 'fg5456ghgf', title: 'first post', content: 'This is my first post'
-    },
-    {
-        id: 'hjgdfdfg4', title: 'second post', content: 'This is my second post'
-    }];
-    res.status(200).json({
-        message: 'Posts fetched successfully',
-        posts: posts
+    Post.find().then(documents => {
+        res.status(200).json({
+            message: 'Posts fetched successfully',
+            posts: documents
+        });
     });
-    next();
 });
 
 //exports app.js
